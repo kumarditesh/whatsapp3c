@@ -1,0 +1,24 @@
+-----------------------
+-- STEPS
+-----------------------
+
+yowsup-cli registration -m 404 -p 91<TERA_PHONE> --cc 91 -r voice
+
+yowsup-cli registration -R <TERA_CODE : eg -> 110-200> -m 404 -p 91<TERA_PHONE> --cc 91
+
+Create file yowsup-cli.config
+| cc=91
+| phone=91<TERA_PHONE>
+| password= <password>
+
+yowsup-cli demos -c yowsup-cli.config -y
+
+/L - To Login
+/help
+/message send 919599237887 Wassup
+
+
+Sample CURL:
+curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887","message":"post reply test here"}' http://localhost:8989/reply
+
+curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887", "path":"/home/yash/Desktop/wallies/peace.jpg", "caption":"test image comment here"}' http://localhost:8989/replyimg
