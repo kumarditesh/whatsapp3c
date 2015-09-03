@@ -32,6 +32,9 @@ class EchoLayer(YowInterfaceLayer):
                     output,
                     to = messageProtocolEntity.getFrom())
 
+                self.toLower(receipt)
+                self.toLower(outgoingMessageProtocolEntity)
+
             else:
                 post_params = {'caller'    :messageProtocolEntity.getFrom(),
                                'messageid' : messageProtocolEntity.getId(),
@@ -42,14 +45,8 @@ class EchoLayer(YowInterfaceLayer):
                 req = urllib2.Request('http://localhost:8989/chat')
                 req.add_header('Content-Type', 'application/json')
                 response = urllib2.urlopen(req, json.dumps(post_params))
-                output = response.read()
+                self.toLower(receipt)
 
-            outgoingMessageProtocolEntity = TextMessageProtocolEntity(
-                output,
-                to = messageProtocolEntity.getFrom())
-
-            self.toLower(receipt)
-            self.toLower(outgoingMessageProtocolEntity)
 
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
