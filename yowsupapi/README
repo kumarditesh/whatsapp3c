@@ -24,7 +24,7 @@ yowsup-cli demos -c yowsup-cli.config -y
 
 Start Bottle API and YowSup run server
 
-python run.py &
+python start_yowsup.py &
 python api.py &
 
 -----------------------

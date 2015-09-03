@@ -21,7 +21,7 @@ class EchoLayer(YowInterfaceLayer):
 
         if True:
             receipt = OutgoingReceiptProtocolEntity(messageProtocolEntity.getId(), messageProtocolEntity.getFrom(), 'read', messageProtocolEntity.getParticipant())
-            print messageProtocolEntity.getBody() + ' from ' + messageProtocolEntity.getFrom()
+            #print messageProtocolEntity.getBody() + ' from ' + messageProtocolEntity.getFrom()
 
             if messageProtocolEntity.getBody() == 'hi' or messageProtocolEntity.getBody() == 'help':
                 req = urllib2.Request('http://localhost:8989/help')
@@ -40,7 +40,7 @@ class EchoLayer(YowInterfaceLayer):
                                'messageid' : messageProtocolEntity.getId(),
                                'message'   : messageProtocolEntity.getBody().lower()}
                 params = urllib.urlencode(post_params)
-                print post_params
+                #print post_params
 
                 req = urllib2.Request('http://localhost:8989/chat')
                 req.add_header('Content-Type', 'application/json')
