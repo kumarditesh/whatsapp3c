@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Protocol Name="MyAngularChatProtocol" xmlns="http://www.spike-engine.com/2011/spml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Operations>
+
+    <!-- Simple join chat operation that puts the client to the chat room -->
+    <Operation Name="JoinNgChat"
+               SuppressSecurity="true" />
+
+    <!-- Simple send message operation that broadcast the message to the chat room -->
+    <Operation Name="SendNgChatMessage"
+               SuppressSecurity="true"
+               Compression="Incoming">
+      <Incoming>
+        <Member Name="Message" Type="String" />
+      </Incoming>
+    </Operation>
+
+    <!-- A push operation (server to client) that sends the messages to the clients -->
+    <Operation Name="NgChatMessages"
+               SuppressSecurity="true"
+               Compression="Outgoing"
+               Direction="Push">
+      <Outgoing>
+        <Member Name="Avatar" Type="ListOfByte" />
+        <Member Name="Message" Type="String" />
+      </Outgoing>
+    </Operation>
+
+    
+  </Operations>
+</Protocol>
