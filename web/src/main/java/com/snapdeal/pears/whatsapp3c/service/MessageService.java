@@ -2,8 +2,13 @@ package com.snapdeal.pears.whatsapp3c.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jsoup.Jsoup;
@@ -12,6 +17,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.snapdeal.pears.whatsapp3c.model.ReplyMedia;
+import com.snapdeal.pears.whatsapp3c.requestresponse.ConversationList;
+import com.snapdeal.pears.whatsapp3c.requestresponse.ConversationList.Conversation;
+import com.snapdeal.pears.whatsapp3c.requestresponse.WatsAppMessage;
 
 /**
  * Created by ditesh on 2/9/15.
@@ -19,12 +27,119 @@ import com.snapdeal.pears.whatsapp3c.model.ReplyMedia;
 public class MessageService {
 
     public static final ObjectMapper mapper = new ObjectMapper();
+    
+    
+    private Map<Long, List<WatsAppMessage>> messagesHolder = new HashMap<Long, List<WatsAppMessage>>();
+
+	private Vector<Long> onGoingConversations = new Vector<Long>();
+
+	public ConversationList prepareConversationList() {
+		ConversationList conversationList = new ConversationList();
+		Set<Long> phoneNumbers = messagesHolder.keySet();
+		Iterator<Long> coversations = onGoingConversations.iterator();
+		while (coversations.hasNext()) {
+			long number = coversations.next();
+			phoneNumbers.remove(number);
+		}
+
+		for (Long number : phoneNumbers) {
+			WatsAppMessage message = getFirstUnreadMessage(number);
+			Conversation conversation = new Conversation(number, message.getMessage(), message.getProducerTs());
+			conversationList.addConversation(conversation);
+		}
+		return conversationList;
+
+	}
+
+	public WatsAppMessage getFirstUnreadMessage(long phoneNumber) {
+		List<WatsAppMessage> watsAppMessages = messagesHolder.get(phoneNumber);
+		WatsAppMessage unReadMessage = null;
+
+		for (int i = 0; i < watsAppMessages.size(); i++) {
+			WatsAppMessage message = watsAppMessages.get(i);
+			if (!message.isRead()) {
+				unReadMessage = message;
+				break;
+			}
+		}
+		return unReadMessage;
+	}
+
+	public boolean lockConversation(long phoneNumber) {
+		if (onGoingConversations.contains(phoneNumber)) {
+			return false;
+		} else {
+			onGoingConversations.add(phoneNumber);
+			return true;
+		}
+	}
+
+	public void unlockConversation(long phoneNumber) {
+		onGoingConversations.remove(phoneNumber);
+	}
+
+	public Long postMessage(long phoneNumber, String message, String messageId, boolean sender) {
+		List<WatsAppMessage> watsAppMessages = messagesHolder.get(phoneNumber);
+		WatsAppMessage watsAppmessage = null;
+		int id =0;
+		if (watsAppMessages == null) {
+			watsAppMessages = new ArrayList<WatsAppMessage>();
+			watsAppmessage = getWatsAPPMessage(0, message, messageId, sender);
+
+		} else {
+
+			id = watsAppMessages.size();
+			watsAppmessage = getWatsAPPMessage(id, message, messageId, sender);
+		}
+		watsAppMessages.add(watsAppmessage);
+		Collections.sort(watsAppMessages);
+		messagesHolder.put(phoneNumber, watsAppMessages);
+		return (long)id;
+	}
+
+	/**
+	 * This will return the list of messages
+	 * 
+	 * @param phoneNumber
+	 * @param startOffset
+	 * @param endOffset
+	 * @return
+	 */
+	public List<WatsAppMessage> getMessages(long phoneNumber, int startOffset, int endOffset) {
+		List<WatsAppMessage> messages = messagesHolder.get(phoneNumber);
+		int size = messages.size();
+		if( endOffset > size){
+			endOffset = size;
+		}
+		List<WatsAppMessage> returnMessages = new ArrayList<WatsAppMessage>();
+		for (int i = startOffset; i < endOffset; i++) {
+			WatsAppMessage watsAappMessage = messages.get(i);
+			watsAappMessage.setRead(true);
+			returnMessages.add(watsAappMessage);
+		}
+		return returnMessages;
+	}
+
+	private WatsAppMessage getWatsAPPMessage(int id, String message, String messageId, boolean sender) {
+		WatsAppMessage watsapp_message = new WatsAppMessage(message, messageId, id, sender);
+		return watsapp_message;
+
+	}
+
+	public Map<Long, List<WatsAppMessage>> getMessagesHolder() {
+		return messagesHolder;
+	}
+
+	public void setMessagesHolder(Map<Long, List<WatsAppMessage>> messagesHolder) {
+		this.messagesHolder = messagesHolder;
+	}
+
 
     public static void main(String[] args) throws IOException {
         System.out.println("Search");
         System.out.println(getSearchResults("samsung galaxy s duos").toString());
         System.out.println("Order Status");
-        System.out.println(getOrderStatus("6829047157", "lokesh.chhaparwal@jasperindia.com").toString());
+        System.out.println(getOrderStatus("8274798095", "lokesh.chhaparwal@jasperindia.com").toString());
         System.out.println("Trending Products");
         System.out.println(getTrendingProducts().toString());
     }
@@ -121,4 +236,8 @@ public class MessageService {
         }
         return rms;
     }
+    
+    
+    
+    
 }

@@ -1,9 +1,6 @@
-Created by Codrops
+What The Hack
+========================
 
-http://www.codrops.com
+Created for Snapdeal Hackathon WTH
 
-Integrate or build upon it for free in your personal or commercial projects. Don't republish, redistribute or sell "as-is". 
-
-Read more here: http://tympanus.net/codrops/licensing/
-
-
+http://www.snapdeal.com
