@@ -39,14 +39,14 @@ import com.snapdeal.pears.whatsapp3c.service.MessageService;
 @Controller
 public class AppController {
 
-    private static final Logger       LOG    = LoggerFactory.getLogger(AppController.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger       LOG     = LoggerFactory.getLogger(AppController.class);
+    private static final ObjectMapper mapper  = new ObjectMapper();
 
-    private static final Gson         gson   = new Gson();
-    
-    private final MessageService service = new MessageService();
+    private static final Gson         gson    = new Gson();
 
-    private static final String       ip     = System.getProperty("address");
+    private final MessageService      service = new MessageService();
+
+    private static final String       ip      = System.getProperty("address");
 
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
@@ -64,15 +64,14 @@ public class AppController {
     public @ResponseBody
     Boolean lockConversation(@PathVariable("phone") String phone) {
            return service.lockConversation(phone);
+
     }
 
-    
     @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
-	public void unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
-		service.unlockConversation(phoneNumber);
-	}
- 
-  
+    public void unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
+        service.unlockConversation(phoneNumber);
+    }
+
     @RequestMapping(value = "/getLastMessages/{phone}/{count}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     GetLastMessagesResponse getLastMessages(@PathVariable("phone") String phone, @PathVariable("count") Integer count) {
@@ -93,11 +92,10 @@ public class AppController {
     public @ResponseBody
     GetLastMessagesResponse getMessages(@PathVariable("phone") String phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
         List<WatsAppMessage> messages = service.getMessages(phone, startOffset, endOffset);
-        GetLastMessagesResponse  response = new GetLastMessagesResponse(messages);
+        GetLastMessagesResponse response = new GetLastMessagesResponse(messages);
         return response;
     }
 
-    
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Long sendCCMessage(@PathVariable("phone") String phone, @RequestParam("message") String message) {
@@ -110,10 +108,13 @@ public class AppController {
 		return service.postMessage(phone, message, messageId, true);
 	}
 
+
     @SuppressWarnings({ "unchecked", "unused" })
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
     public String processMessage(@RequestBody String input) throws IOException {
+        LOG.info("processing message {}", input);
+        String api = "reply";
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
@@ -133,23 +134,26 @@ public class AppController {
                     toReturn.setMessage(medias.get(0).getCaption());
                     medias.clear();
                 }
+                api = "replyorder";
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
+                api = "replysearch";
             }
             if (Commands.trending.name().equals(command)) {
                 medias = MessageService.getTrendingProducts();
+                api = "replytrend";
             }
         }
         if (medias.size() > 0) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
             }
-            sendReply(gson.toJson(medias), "replymediamultiple");
+            sendReply(gson.toJson(medias), api);
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
-                sendReply(gson.toJson(toReturn), "reply");
+                sendReply(gson.toJson(toReturn), api);
             }
         }
         return "done";
@@ -177,7 +181,8 @@ public class AppController {
     }
 
     public void sendReply(String message, String api) {
-        String IP = (StringUtils.isEmpty(ip)) ? "localhost:8989" : ip;
+        LOG.info("Sending reply {}", message);
+        String IP = (StringUtils.isEmpty(ip)) ? "10.20.61.106:8989" : ip;
         HttpPost postRequest = new HttpPost("http://" + IP + "/" + api);
         StringEntity input;
         try {
