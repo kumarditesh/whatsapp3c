@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html ng-app>
+<head>
+    <meta charset="utf-8" />
+    <title>HTML5 Chat with AngularJs, Spike-Engine and Twitter Bootstrap</title>
+
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/styles.css" type="text/css" />
+    
+</head>
+<body>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script id="hidden-template" type="text/x-custom-template">
+                <div class="bubble-container">
+                    <div class="avatar avatar-left"><img src="data:image/png;base64, " /></div>
+                    <div class="bubble bubble-right"></div>
+                </div>
+    </script>
+    
+    <div id="browser-window" >
+        <div id="viewport">
+            <div id="viewport-content">
+            </div>
+        </div>
+
+        <form class="row row-chat" id="msgSubmitForm" >
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Type your message" />
+
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </span>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        window.onload = function (){
+            alert('Yo')
+
+        }
+
+        $(document).ready(function() {
+            $('form#msgSubmitForm').submit(function( event ) {
+                      alert( "Handler for .submit() called." );
+                      event.preventDefault();
+                    });
+        }
+    </script>
+
+</body>
+</html>
