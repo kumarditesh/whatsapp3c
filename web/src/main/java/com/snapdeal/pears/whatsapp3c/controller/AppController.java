@@ -54,16 +54,24 @@ public class AppController {
 
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
-    public void processMessage(@RequestBody String input) throws IOException {
+    public String processMessage(@RequestBody String input) throws IOException {
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
         String messageId = data.get("messageid").toString();
+        /*ExecutorService executorService = new ThreadPoolExecutor(10, 1000, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+        executorService.execute(new ReplyTask(message, caller));
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(1, TimeUnit.HOURS);
+        } catch (InterruptedException e) {
+            // do nothing
+        }*/
         Reply toReturn = new Reply();
-        toReturn.setMessage("Wassup. Welcome to Snapdeal.");
+        toReturn.setMessage("WhaCha. Welcome to Snapdeal.");
         toReturn.setNumber(caller);
-        List<ReplyMedia> medias = new ArrayList<ReplyMedia>();
         message = message.trim().toLowerCase();
+        List<ReplyMedia> medias = new ArrayList<ReplyMedia>();
         if (getCommands().contains(message.split(":")[0].trim())) {
             String command = message.split(":")[0].trim();
             if (Commands.order.name().equals(command)) {
@@ -91,7 +99,59 @@ public class AppController {
         } else {
             sendReply(gson.toJson(toReturn), "reply");
         }
+        return "done";
     }
+
+    /*public class ReplyTask implements Runnable {
+
+        private String caller;
+        private String message;
+
+        public ReplyTask(String message, String caller) {
+            this.message = message;
+            this.caller = caller;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Reply toReturn = new Reply();
+                toReturn.setMessage("Wassup. Welcome to Snapdeal.");
+                toReturn.setNumber(caller);
+                message = message.trim().toLowerCase();
+                List<ReplyMedia> medias = new ArrayList<ReplyMedia>();
+                if (getCommands().contains(message.split(":")[0].trim())) {
+                    String command = message.split(":")[0].trim();
+                    if (Commands.order.name().equals(command)) {
+                        String orderId = message.split(":")[1].trim().split(",")[0];
+                        String emailId = message.split(":")[1].trim().split(",")[1];
+                        medias = MessageService.getOrderStatus(orderId, emailId);
+                        if (medias.size() == 1 && (medias.get(0).getPath() == null)) {
+                            toReturn.setMessage(medias.get(0).getCaption());
+                            medias.clear();
+                        }
+                    }
+                    if (Commands.search.name().equals(command)) {
+                        String keyword = message.split(":")[1].trim();
+                        medias = MessageService.getSearchResults(keyword);
+                    }
+                    if (Commands.trending.name().equals(command)) {
+                        medias = MessageService.getTrendingProducts();
+                    }
+                }
+                if (medias.size() > 0) {
+                    for (ReplyMedia media : medias) {
+                        media.setNumber(caller);
+                        sendReply(gson.toJson(media), "replymedia");
+                    }
+                } else {
+                    sendReply(gson.toJson(toReturn), "reply");
+                }
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+    }*/
 
     public List<String> getCommands() {
         List<String> commands = new ArrayList<String>();
