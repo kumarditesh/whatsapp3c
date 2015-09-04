@@ -167,7 +167,7 @@ public class AppController {
                     medias.clear();
                 }
                 for (ReplyMedia rm : medias) {
-                    toReturn.setMessage(rm.getCaption() + "\n");
+                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
                 }
                 api = "replyorder";
             }
