@@ -49,7 +49,7 @@ class SendMediaLayer(YowInterfaceLayer):
     def disconnect(self,result):
         self.broadcastEvent(YowLayerEvent(YowNetworkLayer.EVENT_STATE_DISCONNECT))
         #raise ImageSent(result+" "+self.MEDIA_TYPE)
-        print(result+" "+self.MEDIA_TYPE)
+        print("Media posted and Disconnected. Media Type:" + str(self.MEDIA_TYPE))
 
     @ProtocolEntityCallback('success')
     def onSuccess(self,entity):
