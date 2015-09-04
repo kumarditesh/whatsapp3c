@@ -13,6 +13,9 @@
 body {
 	background: #34495e;
 }
+::-webkit-scrollbar { 
+    display: none; 
+}
 
 .container > header,
 .codrops-top {

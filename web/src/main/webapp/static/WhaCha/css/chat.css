@@ -7,18 +7,19 @@
 .chat-window {
     width: 70%;
     overflow: hidden;
-    margin: 100px auto;
+    margin: 50px auto 20px auto;
     border: 0px solid #36383a;
     color: #474c57;
     font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
+/*
 @media screen and (max-width:380px) {
 	.chat-window {
 		border: none;
 		border-radius: 0px;
 	}
 }
+*/
 
 .chat-window a {
 	color: #eab1c6;
