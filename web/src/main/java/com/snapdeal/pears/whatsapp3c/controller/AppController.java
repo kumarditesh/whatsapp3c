@@ -63,12 +63,13 @@ public class AppController {
     @RequestMapping(value = "/lockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Boolean lockConversation(@PathVariable("phone") String phone) {
-           return service.lockConversation(phone);
+        return service.lockConversation(phone);
 
     }
 
-    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET,produces = "application/json")
-    public @ResponseBody Boolean  unlockConversation(@PathVariable("phone") String phoneNumber) {
+    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    Boolean unlockConversation(@PathVariable("phone") String phoneNumber) {
         service.unlockConversation(phoneNumber);
         return true;
     }
@@ -76,17 +77,17 @@ public class AppController {
     @RequestMapping(value = "/getLastMessages/{phone}/{count}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     GetLastMessagesResponse getLastMessages(@PathVariable("phone") String phone, @PathVariable("count") Integer count) {
-    	List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
-    	List<WatsAppMessage> sendMessages= null;
-		int totalMessages = watsAppMessages.size();
-		if (count > totalMessages) {
-			sendMessages = service.getMessages(phone, 0, totalMessages);
-		} else {
-			sendMessages=  service.getMessages(phone, totalMessages - count, totalMessages);
-		}
+        List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
+        List<WatsAppMessage> sendMessages = null;
+        int totalMessages = watsAppMessages.size();
+        if (count > totalMessages) {
+            sendMessages = service.getMessages(phone, 0, totalMessages);
+        } else {
+            sendMessages = service.getMessages(phone, totalMessages - count, totalMessages);
+        }
 
-		GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
-		return response;
+        GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
+        return response;
     }
 
     @RequestMapping(value = "/getMessages/{phone}/{startOffset}/{endOffset}", method = RequestMethod.GET, produces = "application/json")
@@ -100,18 +101,19 @@ public class AppController {
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Long sendCCMessage(@PathVariable("phone") String phone, @RequestParam("message") String message) {
-    	String default_messageid = "123";
-    	Reply r = new Reply();
-    	r.setNumber(phone);
-    	r.setMessage(message);
-    	sendReply(gson.toJson(r), "reply");
-		return (Long)service.postMessage(phone, message, default_messageid, false);
+        String default_messageid = "123";
+        Reply r = new Reply();
+        r.setNumber(phone);
+        r.setMessage(message);
+        sendReply(gson.toJson(r), "reply");
+        return (Long) service.postMessage(phone, message, default_messageid, false);
     }
 
-    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
-	public @ResponseBody Long postMessage(@PathVariable("phone") String phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
-		return service.postMessage(phone, message, messageId, true);
-	}
+    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    Long postMessage(@PathVariable("phone") String phone, @RequestParam("message") String message, @RequestParam("messageId") String messageId) {
+        return service.postMessage(phone, message, messageId, true);
+    }
 
     @SuppressWarnings({ "unchecked", "unused" })
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
@@ -122,6 +124,9 @@ public class AppController {
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
+        if (caller.contains("@")) {
+            caller = caller.split("@")[0];
+        }
         String messageId = data.get("messageid").toString();
         Reply toReturn = new Reply();
         toReturn.setMessage("WhaCha. Welcome to Snapdeal.");
@@ -158,7 +163,7 @@ public class AppController {
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
                 sendReply(gson.toJson(toReturn), api);
-            }else
+            } else
                 service.postMessage(caller, message, messageId, true);
         }
         return "done";
