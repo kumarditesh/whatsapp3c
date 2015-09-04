@@ -7,6 +7,8 @@ import urllib
 import json
 from constants import CREDENTIALS
 from constants import pythonserver
+from constants import processMessageApi
+import time
 
 class EchoLayer(YowInterfaceLayer):
 
@@ -25,6 +27,8 @@ class EchoLayer(YowInterfaceLayer):
             print messageProtocolEntity.getBody() + ' from ' + messageProtocolEntity.getFrom()
 
             if messageProtocolEntity.getBody().lower().strip() == 'hi' or messageProtocolEntity.getBody().lower().strip() == 'help':
+                self.toLower(receipt)
+                time.sleep(2)
                 req = urllib2.Request(pythonserver + 'help')
                 response = urllib2.urlopen(req)
                 output = response.read()
@@ -33,20 +37,21 @@ class EchoLayer(YowInterfaceLayer):
                     output,
                     to = messageProtocolEntity.getFrom())
 
-                self.toLower(receipt)
                 self.toLower(outgoingMessageProtocolEntity)
 
             else:
-                post_params = {'caller'    :messageProtocolEntity.getFrom(),
+                self.toLower(receipt)
+                time.sleep(2)
+                post_params = {'caller'    :messageProtocolEntity.getFrom().split('@')[0],
                                'messageid' : messageProtocolEntity.getId(),
                                'message'   : messageProtocolEntity.getBody().lower()}
                 params = urllib.urlencode(post_params)
                 print post_params
 
-                req = urllib2.Request(pythonserver + 'chat')
+                #req = urllib2.Request(pythonserver + 'chat')
+                req = urllib2.Request(processMessageApi)
                 req.add_header('Content-Type', 'application/json')
                 response = urllib2.urlopen(req, json.dumps(post_params))
-                self.toLower(receipt)
 
 
     @ProtocolEntityCallback("receipt")

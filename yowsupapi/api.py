@@ -7,6 +7,12 @@ from constants import directory
 import random
 import urllib 
 import urlparse
+import sys
+import urllib2
+import urllib
+import json
+from constants import processMessageApi
+import requests
 
 #############################################################################
 ## Globals
@@ -22,6 +28,7 @@ help_string = 'Quick Commands:' + '\n' + 'help' + '\n' + 'search <search string>
 @route('/hi')
 @route('/help')
 def hi():
+    print('-------------------------\n REQUEST help\n-------------------------')
     return 'Wassup! Welcome to Snapdeal!' + '\n' + 'Type your message to chat with us. Or, use our quick commands-\n' + help_string
 
 
@@ -33,14 +40,31 @@ def hi():
 @route('/chat', method='POST')
 def chat():
     try:
-        print request.json
-        # Call Backend Api here
+        ## Call B/E Api Here
+        print('Calling Backend Api here: '+ processMessageApi)
+
+        post_params = {'caller'    : request.json.get('caller').split('@')[0],
+                       'messageid' : request.json.get('messageid'),
+                       'message'   : request.json.get('message')}
+
+        params = urllib.urlencode(post_params)
+        print post_params
+        req = urllib2.Request(processMessageApi)
+        req.add_header('Content-Type', 'application/json')
+        response = urllib2.urlopen(req, json.dumps(post_params))
+
+        #headers = { 'Content-Type' : 'application/json' }
+        #r = requests.post(processMessageApi, data=post_params, headers=headers)
+        #print(r.status_code, r.reason)
+
     except Exception as e:
         print('OOPS:')
+        print 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)
         print e
 
 @route('/reply', method='POST')
 def reply():
+    print('-------------------------\n REQUEST reply\n-------------------------')
     print request.json
 
     try:
@@ -53,14 +77,15 @@ def reply():
         os.system(command)
     except Exception as e:
         print('OOPS:')
+        print 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)
         print e
 
 
 @route('/replymedia', method='POST')
 def replyImage():
-    print request.json
-
+    print('-------------------------\n REQUEST replymedia\n-------------------------')
     try:
+        print request.json
         if request.json.get('number') is None:
             return {'error': 'Error. Phone number is required' }
     
@@ -76,12 +101,17 @@ def replyImage():
 
             print('Path is a URI, Saving media to :' + localfilepath)
             urllib.urlretrieve(request.json.get('path'), localfilepath)
+        else:
+            localfilepath = request.json.get('path')
+
+        print('Final path:' + localfilepath)
 
         ## Forward call to whatsapp
         stack = SendMediaStack(CREDENTIALS, [([request.json.get('number'), localfilepath, request.json.get('caption')])])
         stack.start()
     except Exception as e:
         print('OOPS:')
+        print 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)
         print e
 
 
