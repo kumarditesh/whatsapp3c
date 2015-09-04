@@ -166,25 +166,30 @@ public class AppController {
                     toReturn.setMessage(medias.get(0).getCaption());
                     medias.clear();
                 }
-                for (ReplyMedia rm : medias) {
-                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
+                if (medias.size() > 0) {
+                    StringBuilder sb = new StringBuilder();
+                    for (ReplyMedia rm : medias) {
+                        sb.append(rm.getCaption() + "\n \n \n");
+                    }
+                    toReturn.setMessage(sb.toString());
                 }
-                api = "replyorder";
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
+                StringBuilder sb = new StringBuilder();
                 for (ReplyMedia rm : medias) {
-                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
+                    sb.append(rm.getCaption() + "\n \n \n");
                 }
-                api = "replysearch";
+                toReturn.setMessage(sb.toString());
             }
             if (Commands.trending.name().equals(command)) {
                 medias = MessageService.getTrendingProducts();
-                api = "replytrend";
+                StringBuilder sb = new StringBuilder();
                 for (ReplyMedia rm : medias) {
-                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
+                    sb.append(rm.getCaption() + "\n \n \n");
                 }
+                toReturn.setMessage(sb.toString());
             }
         }
         if (medias.size() > 0 && img) {
@@ -192,7 +197,7 @@ public class AppController {
                 media.setNumber(caller);
             }
             sendReply(gson.toJson(medias), api);
-        } else if (!img) {
+        } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
                 sendReply(gson.toJson(toReturn), api);
             } else {
@@ -224,7 +229,7 @@ public class AppController {
     }
 
     public void sendReply(String message, String api) {
-        LOG.info("Sending reply {}", message);
+        LOG.info("Sending {} {}", api, message);
         String IP = (StringUtils.isEmpty(ip)) ? "10.20.61.106:8989" : ip;
         HttpPost postRequest = new HttpPost("http://" + IP + "/" + api);
         StringEntity input;
