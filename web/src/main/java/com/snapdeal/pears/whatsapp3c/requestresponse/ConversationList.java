@@ -20,23 +20,26 @@ public class ConversationList {
 	}
 
 	public static class Conversation {
-		private long phone;
+		private String phone;
 		private String lastUnreadMessage;
 		private Long lastUnreadTS;
 
-		public Conversation(long phone, String lastUnreadMessage, Long lastUnreadTS) {
+		public Conversation(String phone, String lastUnreadMessage, Long lastUnreadTS) {
 			this.phone = phone;
 			this.lastUnreadMessage = lastUnreadMessage;
 			this.lastUnreadTS = lastUnreadTS;
 		}
 
-		public long getPhone() {
+
+		public String getPhone() {
 			return phone;
 		}
 
-		public void setPhone(long phone) {
+
+		public void setPhone(String phone) {
 			this.phone = phone;
 		}
+
 
 		public String getLastUnreadMessage() {
 			return lastUnreadMessage;

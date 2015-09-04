@@ -62,8 +62,9 @@ public class AppController {
 
     @RequestMapping(value = "/lockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    Boolean lockConversation(@PathVariable("phone") Long phone) {
-        return service.lockConversation(phone);
+    Boolean lockConversation(@PathVariable("phone") String phone) {
+           return service.lockConversation(phone);
+
     }
 
     @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
@@ -74,23 +75,23 @@ public class AppController {
 
     @RequestMapping(value = "/getLastMessages/{phone}/{count}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    GetLastMessagesResponse getLastMessages(@PathVariable("phone") Long phone, @PathVariable("count") Integer count) {
-        List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
-        List<WatsAppMessage> sendMessages = null;
-        int totalMessages = watsAppMessages.size();
-        if (count > totalMessages) {
-            sendMessages = service.getMessages(phone, 0, totalMessages);
-        } else {
-            sendMessages = service.getMessages(phone, totalMessages - count, totalMessages);
-        }
-
-        GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
-        return response;
+    GetLastMessagesResponse getLastMessages(@PathVariable("phone") String phone, @PathVariable("count") Integer count) {
+    	List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
+    	List<WatsAppMessage> sendMessages= null;
+		int totalMessages = watsAppMessages.size();
+		if (count > totalMessages) {
+			sendMessages = service.getMessages(phone, 0, totalMessages);
+		} else {
+			sendMessages=  service.getMessages(phone, totalMessages - count, totalMessages);
+		}
+		
+		GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
+		return response;
     }
 
     @RequestMapping(value = "/getMessages/{phone}/{startOffset}/{endOffset}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    GetLastMessagesResponse getMessages(@PathVariable("phone") Long phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
+    GetLastMessagesResponse getMessages(@PathVariable("phone") String phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
         List<WatsAppMessage> messages = service.getMessages(phone, startOffset, endOffset);
         GetLastMessagesResponse response = new GetLastMessagesResponse(messages);
         return response;
@@ -98,32 +99,22 @@ public class AppController {
 
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    Long sendCCMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message) {
-        String default_messageid = "123";
-        Long res = (Long)service.postMessage(phone, message, default_messageid, false);
-        LOG.info("sendCCMessage service id : "+service);
-        LOG.info(service.getMessagesHolder().toString());
-        LOG.info("controller id : "+this);
-        LOG.info("sendCCMessage " + phone);
-        return res ;
+    Long sendCCMessage(@PathVariable("phone") String phone, @RequestParam("message") String message) {
+    	String default_messageid = "123";
+		return (Long)service.postMessage(phone, message, default_messageid, false);
     }
-
-    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
-    public @ResponseBody
-    Long postMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message, @RequestParam("messageId") String messageId) {
-        Long res =  service.postMessage(phone, message, messageId, true);
-        LOG.info("postMessage " + phone);
-        LOG.info("sendCCMessage service id : "+service);
-        LOG.info(service.getMessagesHolder().toString());
-        LOG.info("controller id : "+this);
-        return res;
-    }
+    
+    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
+	public @ResponseBody Long postMessage(@PathVariable("phone") String phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
+		return service.postMessage(phone, message, messageId, true);
+	}
 
     @SuppressWarnings({ "unchecked", "unused" })
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
     public String processMessage(@RequestBody String input) throws IOException {
         LOG.info("processing message {}", input);
+        String api = "reply";
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
@@ -143,23 +134,26 @@ public class AppController {
                     toReturn.setMessage(medias.get(0).getCaption());
                     medias.clear();
                 }
+                api = "replyorder";
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
+                api = "replysearch";
             }
             if (Commands.trending.name().equals(command)) {
                 medias = MessageService.getTrendingProducts();
+                api = "replytrend";
             }
         }
         if (medias.size() > 0) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
             }
-            sendReply(gson.toJson(medias), "replymediamultiple");
+            sendReply(gson.toJson(medias), api);
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
-                sendReply(gson.toJson(toReturn), "reply");
+                sendReply(gson.toJson(toReturn), api);
             }
         }
         return "done";
