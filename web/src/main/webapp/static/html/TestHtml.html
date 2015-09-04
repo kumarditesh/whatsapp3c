@@ -6,52 +6,293 @@
 <body>
     <a href="http://jquery.com/">jQuery</a>
     <script src="js/jquery-2.1.4.min.js"></script>
-    <!--<script id="hidden-template" type="text/x-custom-template">-->
-            <!--<div class="avatar"></br></div>-->
-    <!--</script>-->
+    
+    <script id="conversationTileTemplate" type="text/x-custom-template">
+            <div class="avatar">${phone}</br></div>
+    </script>
+    <script id="chatTabTemplate" type="text/x-custom-template">
+        <div class="chatTab">${phone}</br></div>
+    </script>
+    <script id="chatTileTemplate-left" type="text/x-custom-template">
+        <div class="chatTile-left">${message}</br></div>
+    </script>
+    <script id="chatTileTemplate-right" type="text/x-custom-template">
+        <div class="chatTile-right">${message}</br></div>
+    </script>
 
-<div id = "conversationList" >
-</div>
+    <div id = "conversationList" ></div>
+    </br>
+    <div id="chatWindow" >Chat is here!!</br>
+        <div id="tabContainer" ></div>
+        </br>
+        <div id="chatTileContainer" ></div>
+        </br>
+            <input type="text" id = "messageBox" name="message">
+            <input type="submit" id="submitButton" value="Submit">
+    </div>
+        
+    
 
     <button type="button" id="loadList">load list</button>
-<script>
-    $(document).ready(function () {
-        var formatTime = function(unixTimestamp) {
-            var dt = new Date(unixTimestamp);
+    <script>
+            var formatTime = function(unixTimestamp) {
+                var dt = new Date(unixTimestamp);
 
-            var hours = dt.getHours();
-            var minutes = dt.getMinutes();
-            var seconds = dt.getSeconds();
+                var hours = dt.getHours();
+                var minutes = dt.getMinutes();
+                var seconds = dt.getSeconds();
 
-            // the above dt.get...() functions return a single digit
-            // so I prepend the zero here when needed
-            if (hours < 10)
-             hours = '0' + hours;
+                // the above dt.get...() functions return a single digit
+                // so I prepend the zero here when needed
+                if (hours < 10)
+                 hours = '0' + hours;
 
-            if (minutes < 10)
-             minutes = '0' + minutes;
+                if (minutes < 10)
+                 minutes = '0' + minutes;
 
-            if (seconds < 10)
-             seconds = '0' + seconds;
+                if (seconds < 10)
+                 seconds = '0' + seconds;
 
-            return hours + ":" + minutes + ":" + seconds;
-        }
-        $('#loadList').click( function(){
+                return hours + ":" + minutes + ":" + seconds;
+            }
+
+            //TODO
+            function lockConversation(phone){
+                var url = 'http://localhost:8080/lockConversation/'+phone
+                alert('requesting '+url)
+                return true;
+            }
+
+            //TODO
+            function unlockConversation(phone){
+                var url = 'http://localhost:8080/unlockConversation/'+phone
+                alert('requesting '+url)
+                return true;
+            }
+
+            function closeCurrentChat(){
+                $('#chatWindow').data('isChatOpen',false)
+                $('#chatWindow').data('lastMessageIndex',-1)
+                $('#chatWindow').find('#tabContainer').empty()
+                $('#chatWindow').find('#chatTileContainer').empty()
+                unlockConversation($('#chatWindow').data('phone'))
+                $('#chatWindow').data('phone','')
+            }
+
+            function addMessage(message){
+                var messageAlignment = 'left'
+                            if (message.inboundmsg){
+                                messageAlignment = 'right'
+                            }
+                var template = $($('#chatTileTemplate-'+messageAlignment).html().replace('${message}',message.message));
+                $('#chatTileContainer').append(template)
+                template.data('messageMeta',message)
+            }
+
+            function fillGapMessages(phone,startOffset,endOffset){
+                if (startOffset != endOffset) {
+                    $.ajax({
+                      url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                      error: function() {
+                         alert('ajax call fat gai. Bitch!');
+                      },
+                      dataType: 'json',
+                      success: function(resp) {
+                        $.each(resp.messages, function(index, message){
+                            addMessage(message)
+                        })
+                     },
+                      type: 'GET'
+                   });
+                }
+            }
+            //TODO
+            function checkAndGetMessages(){
+                var phone = $('#chatWindow').data('phone')
+                if (typeof phone !== "undefined" && phone !== '' ){
+                    var lastOffset = $('#chatWindow').data('lastMessageIndex')
+                    $.ajax({
+                      url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                      error: function() {
+                         alert('ajax call fat gai. Bitch!');
+                      },
+                      dataType: 'json',
+                      success: function(resp) {
+                        $.each(resp.messages, function(index, message){
+                            addMessage(message)
+                        })
+                     },
+                      type: 'GET'
+                   });
+                }
+            }
+
+            function populateLastReceivedMessages(phone,messages){
+                var lastMessageCount = $('#chatWindow').data('lastMessageIndex')
+                if (typeof lastMessageCount === "undefined"){
+                    lastMessageCount = -1
+                }
+                var maxReceivedCount = 0
+                var minReceivedCount = 0
+                $.each(messages, function(index, message){
+                            addMessage(message)
+                            if (maxReceivedCount < message.sid){
+                                maxReceivedCount = message.sid
+                            }
+                            if (minReceivedCount > message.sid){
+                                minReceivedCount = message.sid
+                            }
+                        })
+                if (maxReceivedCount > lastMessageCount){
+                    $('#chatWindow').data('lastMessageIndex',maxReceivedCount)
+                }
+                //fillGapMessages(phone,lastMessageCount,minReceivedCount)
+            }
+
+            function populateLastMessages(phone,count){
                 $.ajax({
-                  url: 'http://localhost:8080/getUnreadConversations',
+                  url: 'http://localhost:8080/getLastMessages/'+phone+'/'+count,
                   error: function() {
                      alert('ajax call fat gai. Bitch!');
                   },
                   dataType: 'json',
-                  success: function(data) {
-                    $.each(data.conversations, function(index, value){alert(formatTime(value.lastUnreadTS))})
+                  success: function(resp) {
+                    populateLastReceivedMessages(phone,resp.messages)
                   },
                   type: 'GET'
-               })
-            })
-    })
-    
-    
-</script>
+               });
+            }
+
+            //TODO
+            function openChatWindow(phone){
+                $('#chatWindow').data('isChatOpen',true)
+                $('#chatWindow').data('phone',phone)
+                populateLastMessages(phone,10)
+            }
+
+            function launchChat(conversationTile){
+                var phone = conversationTile.data('conMeta').phone
+                if (lockConversation(phone)) {
+                    if ($('#chatWindow').data('isChatOpen')) {
+                        closeCurrentChat()
+                        openChatWindow(phone)
+                    }else {
+                        openChatWindow(phone)
+                    }
+                    alert('Lock acquired for conversation')
+                } else {
+                    alert('This conversation has already been taken!!')
+                    fetchListAndPopulate()
+                }
+            }
+
+            function compareAndUpdateList(data){
+                $('#conversationList').empty()
+                $.each(data.conversations, function(index, value){
+                            var template = $($('#conversationTileTemplate').html().replace('${phone}',value.lastUnreadMessage));
+                            $('#conversationList').append(template)
+                            template.data('conMeta',value)
+                        })
+                $('#conversationList').find('.avatar').click(function(e){
+                                launchChat($(this))
+                            })
+            }
+
+            function fetchListAndPopulate(){
+                $.ajax({
+                      url: 'http://localhost:8080/getUnreadConversations',
+                      error: function() {
+                         alert('ajax call fat gai. Bitch!');
+                      },
+                      dataType: 'json',
+                      success: function(data) {
+
+                        compareAndUpdateList(data)
+                      },
+                      type: 'GET'
+                   })
+            }
+
+            function serverSendMessage(message){
+                alert("Sending message to server "+message.message)
+                $.ajax({
+                      url: 'http://localhost:8080/sendCCMessage/1?message='+encodeURIComponent(message.message),
+                      error: function() {
+                         alert('ajax call fat gai. Bitch!');
+                      },
+                      dataType: 'json',
+                      success: function(resp) {
+                      	var lastMessageIndex = $('#chatWindow').data('lastMessageIndex')
+                      	fillGapMessages($('#chatWindow').data('phone'),lastMessageIndex+1,resp)
+                      	$('#chatWindow').data('lastMessageIndex',resp)
+                     },
+                      type: 'GET'
+                   });
+            }
+            
+            function sendMessage(){
+                $('#chatWindow').data('sendingMsgInProgress',true)
+                var phone = $('#chatWindow').data('phone')
+                if (typeof phone !== "undefined" && phone !== '' ){
+                    if ($('#messageBox').val() !== '') {
+                        var message = {"inboundmsg" : false, "time":$.now(), "message" : $('#messageBox').val()}
+                        addMessage(message)
+                        serverSendMessage(message)
+                        alert('sending message for phonenumber'+phone+'. Message : '+$('#messageBox').val())
+                        $('#messageBox').val('')
+                    }
+                }
+                $('#chatWindow').data('sendingMsgInProgress',false)
+            }
+
+        function getAndDisplayNewMessages(){
+            var phone = $('#chatWindow').data('phone')
+            if (typeof phone !== "undefined" && phone !== '' ){
+                if (!$('#chatWindow').data('sendingMsgInProgress')){
+                    var lastMessageIndex = $('#chatWindow').data('lastMessageIndex')
+                    if (typeof lastMessageIndex !== "undefined" && lastMessageIndex != -1){
+                        var startOffset = lastMessageIndex + 1
+                        var endOffset = startOffset + 100
+                        $.ajax({
+                          url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                          error: function() {
+                             alert('ajax call fat gai. Bitch!');
+                          },
+                          dataType: 'json',
+                          success: function(resp) {
+                            var maxIndexReceived = 0
+                            $.each(resp.messages, function(index, message){
+                                addMessage(message)
+                                if (maxIndexReceived < message.sid){
+                                    maxIndexReceived = message.sid
+                                }
+                            })
+                            $('#chatWindow').data('lastMessageIndex',maxIndexReceived)
+                         },
+                          type: 'GET'
+                       });
+                    }
+                }
+            }
+        }
+
+        $(document).ready(function () {
+            fetchListAndPopulate()
+            $('#loadList').click( function(){
+                    fetchListAndPopulate()
+                })
+            $('#messageBox').on( "keydown", function(event) {
+                  if(event.which == 13)
+                  {
+                    sendMessage()
+                  }
+
+                });
+            $("#submitButton").click(sendMessage);
+        })
+
+        window.setInterval(function(){fetchListAndPopulate()}, 5000);
+        window.setInterval(function(){getAndDisplayNewMessages()}, 2000);
+    </script>
 </body>
 </html>

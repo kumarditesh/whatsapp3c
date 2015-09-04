@@ -10,23 +10,23 @@
     
 </head>
 <body>
-    <script src="js/angular.min.js" type="application/javascript"></script>
-    <script src="js/jquery-1.11.1.min.js" type="application/javascript"></script>
-    <script src="js/spike-sdk.min.js" type="application/javascript"></script>
-
-    <div id="browser-window" ng-controller="NgChatCtrl">
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script id="hidden-template" type="text/x-custom-template">
+                <div class="bubble-container">
+                    <div class="avatar avatar-left"><img src="data:image/png;base64, " /></div>
+                    <div class="bubble bubble-right"></div>
+                </div>
+    </script>
+    
+    <div id="browser-window" >
         <div id="viewport">
             <div id="viewport-content">
-                <div class="bubble-container" ng-repeat="m in messages">
-                    <div class="avatar avatar-{{m.side}}"><img src="{{m.avatar}}" /></div>
-                    <div class="bubble bubble-{{m.side}}">{{m.text}}</div>
-                </div>
             </div>
         </div>
 
-        <form class="row row-chat" ng-submit="sendMessage()">
+        <form class="row row-chat" id="msgSubmitForm" >
             <div class="input-group">
-                <input type="text" class="form-control" ng-model="messageText" placeholder="Type your message" />
+                <input type="text" class="form-control" placeholder="Type your message" />
 
                 <span class="input-group-btn">
                     <button type="submit" class="btn btn-primary">Send</button>
@@ -37,41 +37,16 @@
     </div>
 
     <script>
-        function NgChatCtrl($scope) {
-            // Our server to connect to
-            var server = new spike.ServerChannel('http://127.0.0.1:8002');
-            var side = 'left';
+        window.onload = function (){
+            alert('Yo')
 
-            // Messages, client info & sending
-            $scope.messages = [];
-            $scope.sendMessage = function () {
-                server.sendNgChatMessage($scope.messageText);
-                $scope.messageText = "";
-            };
+        }
 
-
-            // Occurs when we receive chat messages
-            server.on('ngChatMessagesInform', function (p) {
-                $scope.messages.push({
-                    avatar: "data:image/png;base64," + p.avatar.toBase64(),
-                    text: p.message,
-                    side: side
-                });
-                $scope.$apply();
-
-                // Animate
-                $("#viewport-content").animate({
-                    bottom: $("#viewport-content").height() - $("#viewport").height()
-                }, 250);
-
-                // flip the side
-                side = side == 'left' ? 'right' : 'left';
-            });
-
-            // Once connected, we need to join the chat
-            server.on('connect', function () {
-                server.joinNgChat();
-            });
+        $(document).ready(function() {
+            $('form#msgSubmitForm').submit(function( event ) {
+                      alert( "Handler for .submit() called." );
+                      event.preventDefault();
+                    });
         }
     </script>
 
