@@ -31,11 +31,9 @@ import com.snapdeal.pears.whatsapp3c.service.MessageService;
 @Controller
 public class AppController {
 
-    private static final ObjectMapper mapper     = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final Gson         gson       = new Gson();
-
-    private DefaultHttpClient         httpClient = new DefaultHttpClient();
+    private static final Gson         gson   = new Gson();
 
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
@@ -178,10 +176,12 @@ public class AppController {
         HttpPost postRequest = new HttpPost("http://10.20.61.106:8989/" + api);
         StringEntity input;
         try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
             input = new StringEntity(message);
             input.setContentType("application/json");
             postRequest.setEntity(input);
             httpClient.execute(postRequest);
+            httpClient.close();
         } catch (UnsupportedEncodingException e) {
             // do nothing
         } catch (ClientProtocolException e) {
