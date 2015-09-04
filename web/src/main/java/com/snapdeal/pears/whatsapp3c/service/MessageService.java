@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jsoup.Jsoup;
@@ -29,21 +30,24 @@ public class MessageService {
     public static final ObjectMapper mapper = new ObjectMapper();
     
     
-    private Map<Long, List<WatsAppMessage>> messagesHolder = new HashMap<Long, List<WatsAppMessage>>();
+    private Map<String, List<WatsAppMessage>> messagesHolder = new ConcurrentHashMap<String, List<WatsAppMessage>>();
 
-	private Vector<Long> onGoingConversations = new Vector<Long>();
+	private Vector<String> onGoingConversations = new Vector<String>();
 
 	public ConversationList prepareConversationList() {
 		ConversationList conversationList = new ConversationList();
-		Set<Long> phoneNumbers = messagesHolder.keySet();
-		Iterator<Long> coversations = onGoingConversations.iterator();
+		Set<String> phoneNumbers = messagesHolder.keySet();
+		Iterator<String> coversations = onGoingConversations.iterator();
 		while (coversations.hasNext()) {
-			long number = coversations.next();
+			String number = coversations.next();
 			phoneNumbers.remove(number);
 		}
 
-		for (Long number : phoneNumbers) {
+		for (String number : phoneNumbers) {
 			WatsAppMessage message = getFirstUnreadMessage(number);
+			if(message == null){
+				continue;
+			}
 			Conversation conversation = new Conversation(number, message.getMessage(), message.getProducerTs());
 			conversationList.addConversation(conversation);
 		}
@@ -51,7 +55,7 @@ public class MessageService {
 
 	}
 
-	public WatsAppMessage getFirstUnreadMessage(long phoneNumber) {
+	public WatsAppMessage getFirstUnreadMessage(String phoneNumber) {
 		List<WatsAppMessage> watsAppMessages = messagesHolder.get(phoneNumber);
 		WatsAppMessage unReadMessage = null;
 
@@ -65,7 +69,7 @@ public class MessageService {
 		return unReadMessage;
 	}
 
-	public boolean lockConversation(long phoneNumber) {
+	public boolean lockConversation(String phoneNumber) {
 		if (onGoingConversations.contains(phoneNumber)) {
 			return false;
 		} else {
@@ -78,7 +82,7 @@ public class MessageService {
 		onGoingConversations.remove(phoneNumber);
 	}
 
-	public Long postMessage(long phoneNumber, String message, String messageId, boolean sender) {
+	public Long postMessage(String phoneNumber, String message, String messageId, boolean sender) {
 		List<WatsAppMessage> watsAppMessages = messagesHolder.get(phoneNumber);
 		WatsAppMessage watsAppmessage = null;
 		int id =0;
@@ -105,8 +109,11 @@ public class MessageService {
 	 * @param endOffset
 	 * @return
 	 */
-	public List<WatsAppMessage> getMessages(long phoneNumber, int startOffset, int endOffset) {
+	public List<WatsAppMessage> getMessages(String phoneNumber, int startOffset, int endOffset) {
 		List<WatsAppMessage> messages = messagesHolder.get(phoneNumber);
+		if(messages==null){
+			return null;
+		}
 		int size = messages.size();
 		if( endOffset > size){
 			endOffset = size;
@@ -126,11 +133,11 @@ public class MessageService {
 
 	}
 
-	public Map<Long, List<WatsAppMessage>> getMessagesHolder() {
+	public Map<String, List<WatsAppMessage>> getMessagesHolder() {
 		return messagesHolder;
 	}
 
-	public void setMessagesHolder(Map<Long, List<WatsAppMessage>> messagesHolder) {
+	public void setMessagesHolder(Map<String, List<WatsAppMessage>> messagesHolder) {
 		this.messagesHolder = messagesHolder;
 	}
 

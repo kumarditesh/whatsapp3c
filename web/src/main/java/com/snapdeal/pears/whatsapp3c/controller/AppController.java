@@ -62,7 +62,7 @@ public class AppController {
 
     @RequestMapping(value = "/lockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    Boolean lockConversation(@PathVariable("phone") Long phone) {
+    Boolean lockConversation(@PathVariable("phone") String phone) {
            return service.lockConversation(phone);
     }
 
@@ -75,7 +75,7 @@ public class AppController {
   
     @RequestMapping(value = "/getLastMessages/{phone}/{count}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    GetLastMessagesResponse getLastMessages(@PathVariable("phone") Long phone, @PathVariable("count") Integer count) {
+    GetLastMessagesResponse getLastMessages(@PathVariable("phone") String phone, @PathVariable("count") Integer count) {
     	List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
     	List<WatsAppMessage> sendMessages= null;
 		int totalMessages = watsAppMessages.size();
@@ -91,7 +91,7 @@ public class AppController {
 
     @RequestMapping(value = "/getMessages/{phone}/{startOffset}/{endOffset}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    GetLastMessagesResponse getMessages(@PathVariable("phone") Long phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
+    GetLastMessagesResponse getMessages(@PathVariable("phone") String phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
         List<WatsAppMessage> messages = service.getMessages(phone, startOffset, endOffset);
         GetLastMessagesResponse  response = new GetLastMessagesResponse(messages);
         return response;
@@ -100,13 +100,13 @@ public class AppController {
     
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    Long sendCCMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message) {
+    Long sendCCMessage(@PathVariable("phone") String phone, @RequestParam("message") String message) {
     	String default_messageid = "123";
 		return (Long)service.postMessage(phone, message, default_messageid, false);
     }
     
     @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
-	public @ResponseBody Long postMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
+	public @ResponseBody Long postMessage(@PathVariable("phone") String phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
 		return service.postMessage(phone, message, messageId, true);
 	}
 
