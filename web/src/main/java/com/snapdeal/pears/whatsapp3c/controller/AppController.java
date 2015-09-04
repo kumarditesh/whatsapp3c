@@ -67,8 +67,8 @@ public class AppController {
 
     }
 
-    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
-    public Boolean  unlockConversation(@PathVariable("phone") String phoneNumber) {
+    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET,produces = "application/json")
+    public @ResponseBody Boolean  unlockConversation(@PathVariable("phone") String phoneNumber) {
         service.unlockConversation(phoneNumber);
         return true;
     }
