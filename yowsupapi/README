@@ -34,4 +34,4 @@ python api.py &
 Sample CURL:
 curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887","message":"post reply test here"}' http://localhost:8989/reply
 
-curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887", "path":"/home/yash/Desktop/wallies/peace.jpg", "caption":"test image comment here"}' http://localhost:8989/replyimg
+curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887", "path":"/home/yash/Desktop/wallies/peace.jpg", "caption":"test image comment here"}' http://localhost:8989/replymedia

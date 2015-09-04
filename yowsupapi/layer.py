@@ -8,6 +8,7 @@ import json
 from constants import CREDENTIALS
 from constants import pythonserver
 from constants import processMessageApi
+from constants import trendingNowResponse
 import time
 
 class EchoLayer(YowInterfaceLayer):
@@ -24,11 +25,11 @@ class EchoLayer(YowInterfaceLayer):
 
         if True:
             receipt = OutgoingReceiptProtocolEntity(messageProtocolEntity.getId(), messageProtocolEntity.getFrom(), 'read', messageProtocolEntity.getParticipant())
-            print messageProtocolEntity.getBody() + ' from ' + messageProtocolEntity.getFrom()
+            print 'On msg receive: ' + messageProtocolEntity.getBody() + ' from ' + messageProtocolEntity.getFrom()
+            self.toLower(receipt)
 
             if messageProtocolEntity.getBody().lower().strip() == 'hi' or messageProtocolEntity.getBody().lower().strip() == 'help':
-                self.toLower(receipt)
-                time.sleep(2)
+                #time.sleep(2)
                 req = urllib2.Request(pythonserver + 'help')
                 response = urllib2.urlopen(req)
                 output = response.read()
@@ -40,8 +41,11 @@ class EchoLayer(YowInterfaceLayer):
                 self.toLower(outgoingMessageProtocolEntity)
 
             else:
-                self.toLower(receipt)
-                time.sleep(2)
+                #time.sleep(2)
+                if messageProtocolEntity.getBody().lower().strip().startswith('trending'):
+                    if not trendingNowResponse is None:
+                        
+
                 post_params = {'caller'    :messageProtocolEntity.getFrom().split('@')[0],
                                'messageid' : messageProtocolEntity.getId(),
                                'message'   : messageProtocolEntity.getBody().lower()}

@@ -13,6 +13,8 @@ import urllib
 import json
 from constants import processMessageApi
 import requests
+from constants import trendingNowResponse
+
 
 #############################################################################
 ## Globals
@@ -114,6 +116,69 @@ def replyImage():
         print 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)
         print e
 
+
+@route('/replytrend', method='POST')
+def replyTrending():
+    print('-------------------------\n REQUEST replymedia multiple\n-------------------------')
+    print request.json
+    replyMedia(request.json)
+
+
+@route('/replysearch', method='POST')
+def replySearch():
+    print('-------------------------\n REQUEST replymedia multiple\n-------------------------')
+    print request.json
+    replyMedia(request.json)
+
+
+@route('/replyorder', method='POST')
+def replyOrder():
+    print('-------------------------\n REQUEST replymedia multiple\n-------------------------')
+    print request.json
+    replyMedia(request.json)
+
+
+
+def replyMedia(jsonval):
+    try:
+        count = 0
+        
+        for item in jsonval:
+            
+            if count > 3:
+                break
+
+            print('---\nProcessing path:' + item.get('path') + '\n---\n')
+            localuserdir = item.get('path')
+            if localuserdir.startswith('http') or localuserdir.startswith('https'):
+                ## Path is a URL
+                ## Save file to local file system
+                localuserdir = directory + '/' + item.get('number')
+                if not os.path.exists(localuserdir):
+                    os.makedirs(localuserdir)
+
+                localfilepath = os.path.abspath(localuserdir + '/' + str(random.getrandbits(6)) + '-' + item.get('path').split('/')[-1])
+
+                print('Path is a URI, Saving media to :' + localfilepath)
+                urllib.urlretrieve(item.get('path'), localfilepath)
+            else:
+                localfilepath = item.get('path')
+
+            print('Final path:' + localfilepath)
+            count = count + 1
+
+            if item.get('caption') is None:
+                caption = 'Visit on snapdeal'
+            else:
+                caption = item.get('caption')
+
+            ## Forward call to whatsapp
+            stack = SendMediaStack(CREDENTIALS, [([item.get('number'), localfilepath, caption])])
+            stack.start()
+    except Exception as e:
+        print('OOPS:')
+        print 'Error on line {}'.format(sys.exc_info()[-1].tb_lineno)
+        print e
 
 #############################################################################
 ## Start Server
