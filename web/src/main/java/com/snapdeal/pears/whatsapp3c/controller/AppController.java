@@ -84,7 +84,7 @@ public class AppController {
 		} else {
 			sendMessages=  service.getMessages(phone, totalMessages - count, totalMessages);
 		}
-		
+
 		GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
 		return response;
     }
@@ -101,9 +101,13 @@ public class AppController {
     public @ResponseBody
     Long sendCCMessage(@PathVariable("phone") String phone, @RequestParam("message") String message) {
     	String default_messageid = "123";
+    	Reply r = new Reply();
+    	r.setNumber(phone);
+    	r.setMessage(message);
+    	sendReply(gson.toJson(r), "reply");
 		return (Long)service.postMessage(phone, message, default_messageid, false);
     }
-    
+
     @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
 	public @ResponseBody Long postMessage(@PathVariable("phone") String phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
 		return service.postMessage(phone, message, messageId, true);
