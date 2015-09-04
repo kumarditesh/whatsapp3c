@@ -7,61 +7,61 @@ import java.util.List;
  * Created by ditesh on 3/9/15.
  */
 public class ConversationList {
-    
-    private List<Conversation> conversations = new ArrayList<Conversation>();
 
-    public List<Conversation> getConversations() {
-        return conversations;
-    }
-    
-    //TODO add and sort
-    public void addConversation(Conversation con){
-        conversations.add(con);
-    }
+	private List<Conversation> conversations = new ArrayList<Conversation>();
 
-    public static class Conversation {
-        private String phone ;
-        private String lastUnreadMessage;
-        private Long lastUnreadTS;
+	public List<Conversation> getConversations() {
+		return conversations;
+	}
 
-        public Conversation(String phone, String lastUnreadMessage, Long lastUnreadTS) {
-            this.phone = phone;
-            this.lastUnreadMessage = lastUnreadMessage;
-            this.lastUnreadTS = lastUnreadTS;
-        }
+	// TODO add and sort
+	public void addConversation(Conversation con) {
+		conversations.add(con);
+	}
 
-        public String getPhone() {
-            return phone;
-        }
+	public static class Conversation {
+		private long phone;
+		private String lastUnreadMessage;
+		private Long lastUnreadTS;
 
-        public void setPhone(String phone) {
-            this.phone = phone;
-        }
+		public Conversation(long phone, String lastUnreadMessage, Long lastUnreadTS) {
+			this.phone = phone;
+			this.lastUnreadMessage = lastUnreadMessage;
+			this.lastUnreadTS = lastUnreadTS;
+		}
 
-        public String getLastUnreadMessage() {
-            return lastUnreadMessage;
-        }
+		public long getPhone() {
+			return phone;
+		}
 
-        public void setLastUnreadMessage(String lastUnreadMessage) {
-            this.lastUnreadMessage = lastUnreadMessage;
-        }
+		public void setPhone(long phone) {
+			this.phone = phone;
+		}
 
-        public Long getLastUnreadTS() {
-            return lastUnreadTS;
-        }
+		public String getLastUnreadMessage() {
+			return lastUnreadMessage;
+		}
 
-        public void setLastUnreadTS(Long lastUnreadTS) {
-            this.lastUnreadTS = lastUnreadTS;
-        }
+		public void setLastUnreadMessage(String lastUnreadMessage) {
+			this.lastUnreadMessage = lastUnreadMessage;
+		}
 
-        @Override
-        public String toString() {
-            final StringBuffer sb = new StringBuffer("Conversation{");
-            sb.append("phone='").append(phone).append('\'');
-            sb.append(", lastUnreadMessage='").append(lastUnreadMessage).append('\'');
-            sb.append(", lastUnreadTS=").append(lastUnreadTS);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
+		public Long getLastUnreadTS() {
+			return lastUnreadTS;
+		}
+
+		public void setLastUnreadTS(Long lastUnreadTS) {
+			this.lastUnreadTS = lastUnreadTS;
+		}
+
+		@Override
+		public String toString() {
+			final StringBuffer sb = new StringBuffer("Conversation{");
+			sb.append("phone='").append(phone).append('\'');
+			sb.append(", lastUnreadMessage='").append(lastUnreadMessage).append('\'');
+			sb.append(", lastUnreadTS=").append(lastUnreadTS);
+			sb.append('}');
+			return sb.toString();
+		}
+	}
 }
