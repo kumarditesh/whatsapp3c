@@ -1,6 +1,7 @@
 package com.snapdeal.pears.whatsapp3c.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,11 @@ import com.snapdeal.pears.whatsapp3c.service.MessageService;
 @Controller
 public class AppController {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper     = new ObjectMapper();
 
-    private static final Gson         gson   = new Gson();
+    private static final Gson         gson       = new Gson();
+
+    private DefaultHttpClient         httpClient = new DefaultHttpClient();
 
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
@@ -83,10 +86,10 @@ public class AppController {
         if (medias.size() > 0) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
-                sendReplyMedia(gson.toJson(media));
+                sendReply(gson.toJson(media), "replymedia");
             }
         } else {
-            sendReply(gson.toJson(toReturn));
+            sendReply(gson.toJson(toReturn), "reply");
         }
     }
 
@@ -111,24 +114,21 @@ public class AppController {
         controller.processMessage(gson.toJson(message));
     }
 
-    public void sendReply(String message) throws ClientProtocolException, IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost postRequest = new HttpPost("http://10.20.61.106:8989/reply");
-        StringEntity input = new StringEntity(message);
-        input.setContentType("application/json");
-        postRequest.setEntity(input);
-        httpClient.execute(postRequest);
-        httpClient.getConnectionManager().shutdown();
-    }
-
-    public void sendReplyMedia(String message) throws ClientProtocolException, IOException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost postRequest = new HttpPost("http://10.20.61.106:8989/replymedia");
-        StringEntity input = new StringEntity(message);
-        input.setContentType("application/json");
-        postRequest.setEntity(input);
-        httpClient.execute(postRequest);
-        httpClient.getConnectionManager().shutdown();
+    public void sendReply(String message, String api) {
+        HttpPost postRequest = new HttpPost("http://10.20.61.106:8989/" + api);
+        StringEntity input;
+        try {
+            input = new StringEntity(message);
+            input.setContentType("application/json");
+            postRequest.setEntity(input);
+            httpClient.execute(postRequest);
+        } catch (UnsupportedEncodingException e) {
+            // do nothing
+        } catch (ClientProtocolException e) {
+            // do nothing
+        } catch (IOException e) {
+            // do nothing
+        }
     }
 
 }
