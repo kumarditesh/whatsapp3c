@@ -39,14 +39,14 @@ import com.snapdeal.pears.whatsapp3c.service.MessageService;
 @Controller
 public class AppController {
 
-    private static final Logger       LOG    = LoggerFactory.getLogger(AppController.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger       LOG     = LoggerFactory.getLogger(AppController.class);
+    private static final ObjectMapper mapper  = new ObjectMapper();
 
-    private static final Gson         gson   = new Gson();
-    
-    private final MessageService service = new MessageService();
+    private static final Gson         gson    = new Gson();
 
-    private static final String       ip     = System.getProperty("address");
+    private final MessageService      service = new MessageService();
+
+    private static final String       ip      = System.getProperty("address");
 
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
@@ -63,57 +63,56 @@ public class AppController {
     @RequestMapping(value = "/lockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Boolean lockConversation(@PathVariable("phone") Long phone) {
-           return service.lockConversation(phone);
+        return service.lockConversation(phone);
     }
 
-    
     @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
-	public void unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
-		service.unlockConversation(phoneNumber);
-	}
- 
-  
+    public void unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
+        service.unlockConversation(phoneNumber);
+    }
+
     @RequestMapping(value = "/getLastMessages/{phone}/{count}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     GetLastMessagesResponse getLastMessages(@PathVariable("phone") Long phone, @PathVariable("count") Integer count) {
-    	List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
-    	List<WatsAppMessage> sendMessages= null;
-		int totalMessages = watsAppMessages.size();
-		if (count > totalMessages) {
-			sendMessages = service.getMessages(phone, 0, totalMessages);
-		} else {
-			sendMessages=  service.getMessages(phone, totalMessages - count, totalMessages);
-		}
-		
-		GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
-		return response;
+        List<WatsAppMessage> watsAppMessages = service.getMessagesHolder().get(phone);
+        List<WatsAppMessage> sendMessages = null;
+        int totalMessages = watsAppMessages.size();
+        if (count > totalMessages) {
+            sendMessages = service.getMessages(phone, 0, totalMessages);
+        } else {
+            sendMessages = service.getMessages(phone, totalMessages - count, totalMessages);
+        }
+
+        GetLastMessagesResponse response = new GetLastMessagesResponse(sendMessages);
+        return response;
     }
 
     @RequestMapping(value = "/getMessages/{phone}/{startOffset}/{endOffset}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     GetLastMessagesResponse getMessages(@PathVariable("phone") Long phone, @PathVariable("startOffset") Integer startOffset, @PathVariable("endOffset") Integer endOffset) {
         List<WatsAppMessage> messages = service.getMessages(phone, startOffset, endOffset);
-        GetLastMessagesResponse  response = new GetLastMessagesResponse(messages);
+        GetLastMessagesResponse response = new GetLastMessagesResponse(messages);
         return response;
     }
 
-    
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Long sendCCMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message) {
-    	String default_messageid = "123";
-		return (Long)service.postMessage(phone, message, default_messageid, false);
+        String default_messageid = "123";
+        return (Long) service.postMessage(phone, message, default_messageid, false);
     }
-    
-    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
-	public @ResponseBody Long postMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
-		return service.postMessage(phone, message, messageId, true);
-	}
+
+    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    Long postMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message, @RequestParam("messageId") String messageId) {
+        return service.postMessage(phone, message, messageId, true);
+    }
 
     @SuppressWarnings({ "unchecked", "unused" })
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     @ResponseBody
     public String processMessage(@RequestBody String input) throws IOException {
+        LOG.info("processing message {}", input);
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
@@ -177,7 +176,8 @@ public class AppController {
     }
 
     public void sendReply(String message, String api) {
-        String IP = (StringUtils.isEmpty(ip)) ? "localhost:8989" : ip;
+        LOG.info("Sending reply {}", message);
+        String IP = (StringUtils.isEmpty(ip)) ? "10.20.61.106:8989" : ip;
         HttpPost postRequest = new HttpPost("http://" + IP + "/" + api);
         StringEntity input;
         try {
