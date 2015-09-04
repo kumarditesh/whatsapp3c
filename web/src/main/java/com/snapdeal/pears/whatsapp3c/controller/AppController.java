@@ -192,7 +192,8 @@ public class AppController {
     }
 
     public void sendReply(String message, String api) {
-        HttpPost postRequest = new HttpPost("http://localhost:8989/" + api);
+        String ip = "10.20.61.106:8989";
+        HttpPost postRequest = new HttpPost("http://" + ip + "/" + api);
         StringEntity input;
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
