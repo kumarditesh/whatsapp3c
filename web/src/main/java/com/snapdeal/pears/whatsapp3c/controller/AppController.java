@@ -113,6 +113,7 @@ public class AppController {
     @ResponseBody
     public String processMessage(@RequestBody String input) throws IOException {
         LOG.info("processing message {}", input);
+        String api = "reply";
         Map<String, Object> data = mapper.readValue(input, Map.class);
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
@@ -132,23 +133,26 @@ public class AppController {
                     toReturn.setMessage(medias.get(0).getCaption());
                     medias.clear();
                 }
+                api = "replyorder";
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
+                api = "replysearch";
             }
             if (Commands.trending.name().equals(command)) {
                 medias = MessageService.getTrendingProducts();
+                api = "replytrend";
             }
         }
         if (medias.size() > 0) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
             }
-            sendReply(gson.toJson(medias), "replymediamultiple");
+            sendReply(gson.toJson(medias), api);
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
-                sendReply(gson.toJson(toReturn), "reply");
+                sendReply(gson.toJson(toReturn), api);
             }
         }
         return "done";
