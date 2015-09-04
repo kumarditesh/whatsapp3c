@@ -67,7 +67,7 @@ public class AppController {
     }
 
     
-    @RequestMapping(value = "/unlockConversation", method = RequestMethod.GET)
+    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
 	public void unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
 		service.unlockConversation(phoneNumber);
 	}
@@ -105,8 +105,8 @@ public class AppController {
 		return (Long)service.postMessage(phone, message, default_messageid, false);
     }
     
-    @RequestMapping(value = "/postMessage/{phone}/{message}/{messageId}", method = RequestMethod.GET,produces = "application/json")
-	public Long postMessage(@PathVariable("phone") Long phone, @PathVariable("message") String message,@PathVariable("messageId") String messageId) {
+    @RequestMapping(value = "/postMessage/{phone}", method = RequestMethod.GET,produces = "application/json")
+	public @ResponseBody Long postMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message,@RequestParam("messageId") String messageId) {
 		return service.postMessage(phone, message, messageId, true);
 	}
 
