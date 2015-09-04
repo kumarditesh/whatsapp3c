@@ -18,6 +18,19 @@ yowsup-cli demos -c yowsup-cli.config -y
 /message send 919599237887 Wassup
 
 
+-----------------------
+-- USE API
+-----------------------
+
+Start Bottle API and YowSup run server
+
+python start_yowsup.py &
+python api.py &
+
+-----------------------
+-- Curl requests format
+-----------------------
+
 Sample CURL:
 curl -H "Content-Type: application/json" -X POST -d '{"number":"919599237887","message":"post reply test here"}' http://localhost:8989/reply
 

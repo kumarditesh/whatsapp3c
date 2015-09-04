@@ -12,9 +12,9 @@ from yowsup.stacks import YowStack, YOWSUP_CORE_LAYERS
 from yowsup import env
 
 from yowsup.layers.axolotl import YowAxolotlLayer
+from constants import CREDENTIALS
 
-
-CREDENTIALS = ("919555535035", "Tbpn2wBDVHDTcYWZeUq6GcQ+pMw=") # replace with your phone and password
+#CREDENTIALS = ("919555535035", "veKEGp2CZK3RzOaW+1KiO7EYEm8=") # replace with your phone and password
 layers = (
         EchoLayer,
         (YowAuthenticationProtocolLayer, YowMessagesProtocolLayer, YowReceiptProtocolLayer, YowAckProtocolLayer),
