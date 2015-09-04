@@ -12,6 +12,8 @@ from yowsup.layers.auth import YowAuthenticationProtocolLayer, AuthError
 from yowsup.layers.coder import YowCoderLayer
 from yowsup import env
 
+from constants import CREDENTIALS
+
 class ImageSent(Exception):
     def __init__(self, value):
         self.value = value
@@ -138,7 +140,7 @@ class SendMediaStack(object):
             print("Authentication Error: %s" % e.message)
 
 
-#CREDENTIALS = ("919555535035", "Tbpn2wBDVHDTcYWZeUq6GcQ+pMw=") # replace with your phone and password
+#CREDENTIALS = ("919555535035", "veKEGp2CZK3RzOaW+1KiO7EYEm8=") # replace with your phone and password
 #if __name__ == '__main__':
 #    stack = SendMediaStack(CREDENTIALS, [(["919599237887", "peace.jpg", "With caption"])])
 #    stack.start()

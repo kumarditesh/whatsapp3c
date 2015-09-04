@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time,sched
+from constants import directory
 
 pid = 0
 
@@ -30,6 +31,11 @@ def poll():
 
 if __name__ == '__main__':
     refereshYowsupServer()
+
+    # Create media dir for downloads/uploads
+    # directory imported from constants
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     try:
         while True:
