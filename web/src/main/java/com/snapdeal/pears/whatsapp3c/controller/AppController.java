@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.snapdeal.pears.whatsapp3c.constants.Commands;
+import com.snapdeal.pears.whatsapp3c.model.InputMessage;
 import com.snapdeal.pears.whatsapp3c.model.Reply;
+import com.snapdeal.pears.whatsapp3c.model.ReplyMedia;
 import com.snapdeal.pears.whatsapp3c.requestresponse.ConversationList;
 import com.snapdeal.pears.whatsapp3c.service.MessageService;
 
@@ -54,27 +56,38 @@ public class AppController {
         String message = data.get("message").toString();
         String caller = data.get("caller").toString();
         String messageId = data.get("messageid").toString();
-        String toReturn = "Wassup. Welcome to Snapdeal.";
+        Reply toReturn = new Reply();
+        toReturn.setMessage("Wassup. Welcome to Snapdeal.");
+        toReturn.setNumber(caller);
+        List<ReplyMedia> medias = new ArrayList<ReplyMedia>();
         message = message.trim().toLowerCase();
         if (getCommands().contains(message.split(":")[0].trim())) {
             String command = message.split(":")[0].trim();
             if (Commands.order.name().equals(command)) {
                 String orderId = message.split(":")[1].trim().split(",")[0];
                 String emailId = message.split(":")[1].trim().split(",")[1];
-                toReturn = MessageService.getOrderStatus(orderId, emailId);
+                medias = MessageService.getOrderStatus(orderId, emailId);
+                if (medias.size() == 1 && (medias.get(0).getPath() == null)) {
+                    toReturn.setMessage(medias.get(0).getCaption());
+                    medias.clear();
+                }
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
-                toReturn = MessageService.getSearchResults(keyword);
+                medias = MessageService.getSearchResults(keyword);
             }
             if (Commands.trending.name().equals(command)) {
-                toReturn = MessageService.getTrendingProducts();
+                medias = MessageService.getTrendingProducts();
             }
         }
-        Reply reply = new Reply();
-        reply.setMessage(toReturn);
-        reply.setNumber(caller);
-        sendReply(gson.toJson(reply));
+        if (medias.size() > 0) {
+            for (ReplyMedia media : medias) {
+                media.setNumber(caller);
+                sendReplyMedia(gson.toJson(media));
+            }
+        } else {
+            sendReply(gson.toJson(toReturn));
+        }
     }
 
     public List<String> getCommands() {
@@ -85,12 +98,17 @@ public class AppController {
         return commands;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         AppController controller = new AppController();
-        String message = "{\"message\":\"hi back\",\"number\":\"919999700996\"}";
-        controller.sendReply(message);
-        message = "{\"caption\":\"hi back\",\"number\":\"919999700996\",\"path\":\"http://n1.sdlcdn.com/imgs/a/j/u/166x194/Samsung-S-Duos-2-White--SDL668211406-1-6437f.jpg\"}";
-        controller.sendReplyMedia(message);
+        InputMessage message = new InputMessage();
+        message.setCaller("919999700996");
+        message.setMessageid("1");
+        message.setMessage("order:6829047157,lokesh.chhaparwal@snapdeal.com");
+        controller.processMessage(gson.toJson(message));
+        message.setMessage("search:samsung galaxy s duos");
+        controller.processMessage(gson.toJson(message));
+        message.setMessage("trending");
+        controller.processMessage(gson.toJson(message));
     }
 
     public void sendReply(String message) throws ClientProtocolException, IOException {

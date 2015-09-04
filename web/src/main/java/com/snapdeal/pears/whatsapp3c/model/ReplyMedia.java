@@ -37,4 +37,9 @@ public class ReplyMedia {
         this.path = path;
     }
 
+    @Override
+    public String toString() {
+        return "ReplyMedia [number=" + number + ", caption=" + caption + ", path=" + path + "]";
+    }
+
 }
