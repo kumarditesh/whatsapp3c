@@ -196,7 +196,7 @@ public class AppController {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
             }
-            sendReply(gson.toJson(medias), api);
+            sendReply(gson.toJson(medias.subList(0, 1)), api);
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
                 sendReply(gson.toJson(toReturn), api);
