@@ -14,6 +14,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,8 @@ public class AppController {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final Gson         gson   = new Gson();
+
+    private static final String       ip     = System.getProperty("address");
 
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
@@ -192,8 +195,8 @@ public class AppController {
     }
 
     public void sendReply(String message, String api) {
-        String ip = "10.20.61.106:8989";
-        HttpPost postRequest = new HttpPost("http://" + ip + "/" + api);
+        String IP = (StringUtils.isEmpty(ip)) ? "localhost:8989" : ip;
+        HttpPost postRequest = new HttpPost("http://" + IP + "/" + api);
         StringEntity input;
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
