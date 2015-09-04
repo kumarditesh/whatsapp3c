@@ -107,6 +107,10 @@ public class MessageService {
 	 */
 	public List<WatsAppMessage> getMessages(long phoneNumber, int startOffset, int endOffset) {
 		List<WatsAppMessage> messages = messagesHolder.get(phoneNumber);
+		int size = messages.size();
+		if( endOffset > size){
+			endOffset = size;
+		}
 		List<WatsAppMessage> returnMessages = new ArrayList<WatsAppMessage>();
 		for (int i = startOffset; i < endOffset; i++) {
 			WatsAppMessage watsAappMessage = messages.get(i);

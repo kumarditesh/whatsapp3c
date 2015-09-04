@@ -97,13 +97,18 @@ public class AppController {
         return response;
     }
 
-    //TODO ditesh
+    
     @RequestMapping(value = "/sendCCMessage/{phone}", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
     Long sendCCMessage(@PathVariable("phone") Long phone, @RequestParam("message") String message) {
     	String default_messageid = "123";
 		return (Long)service.postMessage(phone, message, default_messageid, false);
     }
+    
+    @RequestMapping(value = "/postMessage/{phone}/{message}/{messageId}", method = RequestMethod.GET,produces = "application/json")
+	public Long postMessage(@PathVariable("phone") Long phone, @PathVariable("message") String message,@PathVariable("messageId") String messageId) {
+		return service.postMessage(phone, message, messageId, true);
+	}
 
     @SuppressWarnings({ "unchecked", "unused" })
     @RequestMapping(value = "/processMessage", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
