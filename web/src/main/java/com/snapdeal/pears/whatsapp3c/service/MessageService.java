@@ -1,14 +1,7 @@
 package com.snapdeal.pears.whatsapp3c.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -37,7 +30,7 @@ public class MessageService {
 
 	public ConversationList prepareConversationList() {
 		ConversationList conversationList = new ConversationList();
-		Set<String> phoneNumbers = messagesHolder.keySet();
+		Set<String> phoneNumbers = new HashSet<String>(messagesHolder.keySet());
 		Iterator<String> coversations = onGoingConversations.iterator();
 		while (coversations.hasNext()) {
 			String number = coversations.next();

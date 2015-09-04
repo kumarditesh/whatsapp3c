@@ -401,7 +401,7 @@ $(document).ready(function(){
                    $.ajax({
                                              url: 'http://localhost:8080/lockConversation/'+phone,
                                              error: function() {
-                                                alert('ajax call fat gai. Bitch!');
+                                                alert('http://localhost:8080/lockConversation/'+phone);
                                              },
                                              dataType: 'json',
                                              success: function(resp) {
@@ -418,7 +418,7 @@ $(document).ready(function(){
                    $.ajax({
                                              url: 'http://localhost:8080/unlockConversation/'+phone,
                                              error: function() {
-                                                alert('ajax call fat gai. Bitch!');
+                                                alert('http://localhost:8080/unlockConversation/'+phone);
                                              },
                                              dataType: 'json',
                                              success: function(resp) {
@@ -456,7 +456,7 @@ $(document).ready(function(){
                         $.ajax({
                           url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                           error: function() {
-                             alert('ajax call fat gai. Bitch!');
+                             alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -476,7 +476,7 @@ $(document).ready(function(){
                         $.ajax({
                           url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                           error: function() {
-                             alert('ajax call fat gai. Bitch!');
+                             alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -498,11 +498,11 @@ $(document).ready(function(){
                     var minReceivedCount = 0
                     $.each(messages, function(index, message){
                                 logicAddMessage(message)
-                                if (maxReceivedCount < message.sid){
-                                    maxReceivedCount = message.sid
+                                if (maxReceivedCount < message.id){
+                                    maxReceivedCount = message.id
                                 }
-                                if (minReceivedCount > message.sid){
-                                    minReceivedCount = message.sid
+                                if (minReceivedCount > message.id){
+                                    minReceivedCount = message.id
                                 }
                             })
                     if (maxReceivedCount > lastMessageCount){
@@ -515,7 +515,7 @@ $(document).ready(function(){
                     $.ajax({
                       url: 'http://localhost:8080/getLastMessages/'+phone+'/'+count,
                       error: function() {
-                         alert('ajax call fat gai. Bitch!');
+                         alert('http://localhost:8080/getLastMessages/'+phone+'/'+count);
                       },
                       dataType: 'json',
                       success: function(resp) {
@@ -564,7 +564,7 @@ $(document).ready(function(){
                     $.ajax({
                           url: 'http://localhost:8080/getUnreadConversations',
                           error: function() {
-                             alert('ajax call fat gai. Bitch!');
+                             alert('http://localhost:8080/getUnreadConversations');
                           },
                           dataType: 'json',
                           success: function(data) {
@@ -576,10 +576,11 @@ $(document).ready(function(){
                 }
     
                 function serverSendMessage(message){
+                	var phone = $('.chat-window').data('phone');
                     $.ajax({
-                          url: 'http://localhost:8080/sendCCMessage/1?message='+encodeURIComponent(message.message),
+                          url: 'http://localhost:8080/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message),
                           error: function() {
-                             alert('ajax call fat gai. Bitch!');
+                             alert('http://localhost:8080/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message));
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -615,18 +616,20 @@ $(document).ready(function(){
                             $.ajax({
                               url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                               error: function() {
-                                 alert('ajax call fat gai. Bitch!');
+                                 alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                               },
                               dataType: 'json',
                               success: function(resp) {
-                                var maxIndexReceived = 0
+                                var maxIndexReceived = lastMessageIndex
                                 $.each(resp.messages, function(index, message){
                                     logicAddMessage(message)
-                                    if (maxIndexReceived < message.sid){
-                                        maxIndexReceived = message.sid
+                                    if (maxIndexReceived < message.id){
+                                        maxIndexReceived = message.id
                                     }
                                 })
-                                $('.chat-window').data('lastMessageIndex',maxIndexReceived)
+                                if (maxIndexReceived > lastMessageIndex) {
+                                	$('.chat-window').data('lastMessageIndex',maxIndexReceived)
+								}
                              },
                               type: 'GET'
                            });
@@ -640,5 +643,5 @@ $(document).ready(function(){
             })
     
             window.setInterval(function(){fetchListAndPopulate()}, 5000);
-            //window.setInterval(function(){getAndDisplayNewMessages()}, 2000);
+            window.setInterval(function(){getAndDisplayNewMessages()}, 2000);
 })
