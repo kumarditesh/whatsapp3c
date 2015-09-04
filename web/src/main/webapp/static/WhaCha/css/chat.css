@@ -12,14 +12,13 @@
     color: #474c57;
     font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-/*
+
 @media screen and (max-width:380px) {
 	.chat-window {
 		border: none;
 		border-radius: 0px;
 	}
 }
-*/
 
 .chat-window a {
 	color: #eab1c6;
@@ -31,7 +30,7 @@
 }
 
 .chat-messages {
-	height: 460px;
+	/*height: 460px;*/
 	overflow-x: hidden;
 	overflow-y: auto;
 	width: 100%;
