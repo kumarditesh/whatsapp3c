@@ -43,6 +43,18 @@ public class AppController {
 
     private static final Gson         gson   = new Gson();
 
+    //TODO ditesh
+    @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    Boolean unlockConversation(@PathVariable("phone") String phone) {
+        if (phone.equals("1"))
+            return true;
+        else if (phone.equals("2"))
+            return true;
+        else
+            return false;
+    }
+
     @RequestMapping(value = "/healthcheck", method = RequestMethod.GET, produces = "text/html")
     public @ResponseBody
     String createRequestPage() {
@@ -78,15 +90,15 @@ public class AppController {
         if (phone.equals("1")) {
             GetLastMessagesResponse response = new GetLastMessagesResponse();
             response.addMessages(new UserMessage(3l, "message no. 3", 999999l, true));
-            response.addMessages(new UserMessage(2l, "message no. 2", 999988l, true));
+            response.addMessages(new UserMessage(2l, "message no. 2", 999988l, false));
             response.addMessages(new UserMessage(1l, "message no. 1", 999977l, true));
             return response;
         } else if (phone.equals("2")) {
             GetLastMessagesResponse response = new GetLastMessagesResponse();
             response.addMessages(new UserMessage(5l, "message no. 5", 999999l, true));
-            response.addMessages(new UserMessage(4l, "message no. 4", 999988l, true));
+            response.addMessages(new UserMessage(4l, "message no. 4", 999988l, false));
             response.addMessages(new UserMessage(3l, "message no. 3", 999977l, true));
-            response.addMessages(new UserMessage(2l, "message no. 2", 999966l, true));
+            response.addMessages(new UserMessage(2l, "message no. 2", 999966l, false));
             response.addMessages(new UserMessage(1l, "message no. 1", 999955l, true));
             return response;
         } else {
@@ -102,15 +114,15 @@ public class AppController {
         if (phone.equals("1")) {
             GetLastMessagesResponse response = new GetLastMessagesResponse();
             response.addMessages(new UserMessage(3l, "message no. 3", 999999l, true));
-            response.addMessages(new UserMessage(2l, "message no. 2", 999988l, true));
+            response.addMessages(new UserMessage(2l, "message no. 2", 999988l, false));
             response.addMessages(new UserMessage(1l, "message no. 1", 999977l, true));
             return response;
         } else if (phone.equals("2")) {
             GetLastMessagesResponse response = new GetLastMessagesResponse();
             response.addMessages(new UserMessage(5l, "message no. 5", 999999l, true));
-            response.addMessages(new UserMessage(4l, "message no. 4", 999988l, true));
+            response.addMessages(new UserMessage(4l, "message no. 4", 999988l, false));
             response.addMessages(new UserMessage(3l, "message no. 3", 999977l, true));
-            response.addMessages(new UserMessage(2l, "message no. 2", 999966l, true));
+            response.addMessages(new UserMessage(2l, "message no. 2", 999966l, false));
             response.addMessages(new UserMessage(1l, "message no. 1", 999955l, true));
             return response;
         } else {
