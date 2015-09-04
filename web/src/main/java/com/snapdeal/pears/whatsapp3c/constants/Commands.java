@@ -11,6 +11,6 @@ package com.snapdeal.pears.whatsapp3c.constants;
  */
 public enum Commands {
 
-    order, search, trending
+    order, search, trending, searchimg, trendingimg, orderimg;
 
 }

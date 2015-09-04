@@ -133,9 +133,10 @@ public class AppController {
         toReturn.setNumber(caller);
         message = message.trim().toLowerCase();
         List<ReplyMedia> medias = new ArrayList<ReplyMedia>();
+        boolean img = false;
         if (getCommands().contains(message.split(":")[0].trim())) {
             String command = message.split(":")[0].trim();
-            if (Commands.order.name().equals(command)) {
+            if (Commands.orderimg.name().equals(command)) {
                 String orderId = message.split(":")[1].trim().split(",")[0];
                 String emailId = message.split(":")[1].trim().split(",")[1];
                 medias = MessageService.getOrderStatus(orderId, emailId);
@@ -144,18 +145,50 @@ public class AppController {
                     medias.clear();
                 }
                 api = "replyorder";
+                img = true;
+            }
+            if (Commands.searchimg.name().equals(command)) {
+                String keyword = message.split(":")[1].trim();
+                medias = MessageService.getSearchResults(keyword);
+                api = "replysearch";
+                img = true;
+            }
+            if (Commands.trendingimg.name().equals(command)) {
+                medias = MessageService.getTrendingProducts();
+                api = "replytrend";
+                img = true;
+            }
+            if (Commands.order.name().equals(command)) {
+                String orderId = message.split(":")[1].trim().split(",")[0];
+                String emailId = message.split(":")[1].trim().split(",")[1];
+                medias = MessageService.getOrderStatus(orderId, emailId);
+                if (medias.size() == 1 && (medias.get(0).getPath() == null)) {
+                    toReturn.setMessage(medias.get(0).getCaption());
+                    medias.clear();
+                }
+                for (ReplyMedia rm : medias) {
+                    toReturn.setMessage(rm.getCaption() + "\n");
+                }
+                api = "replyorder";
             }
             if (Commands.search.name().equals(command)) {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
+                for (ReplyMedia rm : medias) {
+                    toReturn.setMessage(rm.getCaption() + "\n");
+                }
                 api = "replysearch";
             }
             if (Commands.trending.name().equals(command)) {
                 medias = MessageService.getTrendingProducts();
                 api = "replytrend";
+                for (ReplyMedia rm : medias) {
+                    toReturn.setNumber(caller);
+                    toReturn.setMessage(rm.getCaption() + "\n");
+                }
             }
         }
-        if (medias.size() > 0) {
+        if (medias.size() > 0 && img) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
             }
