@@ -145,10 +145,12 @@ public class AppController {
         if (medias.size() > 0) {
             for (ReplyMedia media : medias) {
                 media.setNumber(caller);
-                sendReply(gson.toJson(media), "replymedia");
             }
+            sendReply(gson.toJson(medias), "replymediamultiple");
         } else {
-            sendReply(gson.toJson(toReturn), "reply");
+            if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
+                sendReply(gson.toJson(toReturn), "reply");
+            }
         }
         return "done";
     }
