@@ -72,7 +72,7 @@ public class MessageService {
 		}
 	}
 
-	public void unlockConversation(long phoneNumber) {
+	public void unlockConversation(String phoneNumber) {
 		onGoingConversations.remove(phoneNumber);
 	}
 

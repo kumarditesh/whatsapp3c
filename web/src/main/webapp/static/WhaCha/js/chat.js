@@ -369,7 +369,7 @@ $(document).ready(function(){
 	//TODO---------------------------------------> Ditesh Logic
 	//TODO---------------------------------------> Ditesh Logic
 	//TODO---------------------------------------> Ditesh Logic
-	            var host = 'localhost:8080'
+	            var host = 'whacha:8080'
                 
                 var conversationTileTemplate = '<li><a class="gn-icon gn-icon-pictures">${phone}</a></li>'
                 var messageTileTemplateInbound = '<li class="chat-message chat-message-friend"><div class="chat-message-bubble">${message}</div></li>'
@@ -399,9 +399,9 @@ $(document).ready(function(){
                 function lockConversation(phone){
                    var ret = false;
                    $.ajax({
-                                             url: 'http://localhost:8080/lockConversation/'+phone,
+                                             url: 'http://'+host+'/lockConversation/'+phone,
                                              error: function() {
-                                                alert('http://localhost:8080/lockConversation/'+phone);
+                                                alert('http://'+host+'/lockConversation/'+phone);
                                              },
                                              dataType: 'json',
                                              success: function(resp) {
@@ -416,9 +416,9 @@ $(document).ready(function(){
                 function unlockConversation(phone){
                    var ret = false;
                    $.ajax({
-                                             url: 'http://localhost:8080/unlockConversation/'+phone,
+                                             url: 'http://'+host+'/unlockConversation/'+phone,
                                              error: function() {
-                                                alert('http://localhost:8080/unlockConversation/'+phone);
+                                                alert('http://'+host+'/unlockConversation/'+phone);
                                              },
                                              dataType: 'json',
                                              success: function(resp) {
@@ -454,9 +454,9 @@ $(document).ready(function(){
                 function fillGapMessages(phone,startOffset,endOffset){
                     if (startOffset != endOffset) {
                         $.ajax({
-                          url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                          url: 'http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                           error: function() {
-                             alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
+                             alert('http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -474,9 +474,9 @@ $(document).ready(function(){
                     if (typeof phone !== "undefined" && phone !== '' ){
                         var lastOffset = $('.chat-window').data('lastMessageIndex')
                         $.ajax({
-                          url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                          url: 'http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                           error: function() {
-                             alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
+                             alert('http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -513,9 +513,9 @@ $(document).ready(function(){
     
                 function populateLastMessages(phone,count){
                     $.ajax({
-                      url: 'http://localhost:8080/getLastMessages/'+phone+'/'+count,
+                      url: 'http://'+host+'/getLastMessages/'+phone+'/'+count,
                       error: function() {
-                         alert('http://localhost:8080/getLastMessages/'+phone+'/'+count);
+                         alert('http://'+host+'/getLastMessages/'+phone+'/'+count);
                       },
                       dataType: 'json',
                       success: function(resp) {
@@ -562,9 +562,9 @@ $(document).ready(function(){
     
                 function fetchListAndPopulate(){
                     $.ajax({
-                          url: 'http://localhost:8080/getUnreadConversations',
+                          url: 'http://'+host+'/getUnreadConversations',
                           error: function() {
-                             alert('http://localhost:8080/getUnreadConversations');
+                             alert('http://'+host+'/getUnreadConversations');
                           },
                           dataType: 'json',
                           success: function(data) {
@@ -578,9 +578,9 @@ $(document).ready(function(){
                 function serverSendMessage(message){
                 	var phone = $('.chat-window').data('phone');
                     $.ajax({
-                          url: 'http://localhost:8080/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message),
+                          url: 'http://'+host+'/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message),
                           error: function() {
-                             alert('http://localhost:8080/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message));
+                             alert('http://'+host+'/sendCCMessage/'+phone+'?message='+encodeURIComponent(message.message));
                           },
                           dataType: 'json',
                           success: function(resp) {
@@ -614,9 +614,9 @@ $(document).ready(function(){
                             var startOffset = lastMessageIndex + 1
                             var endOffset = startOffset + 100
                             $.ajax({
-                              url: 'http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
+                              url: 'http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset,
                               error: function() {
-                                 alert('http://localhost:8080/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
+                                 alert('http://'+host+'/getMessages/'+phone+'/'+startOffset+'/'+endOffset);
                               },
                               dataType: 'json',
                               success: function(resp) {

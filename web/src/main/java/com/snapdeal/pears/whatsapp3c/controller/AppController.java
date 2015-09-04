@@ -68,7 +68,7 @@ public class AppController {
     }
 
     @RequestMapping(value = "/unlockConversation/{phone}", method = RequestMethod.GET)
-    public Boolean  unlockConversation(@PathVariable("phoneNumber") Long phoneNumber) {
+    public Boolean  unlockConversation(@PathVariable("phone") String phoneNumber) {
         service.unlockConversation(phoneNumber);
         return true;
     }
@@ -154,7 +154,8 @@ public class AppController {
         } else {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
                 sendReply(gson.toJson(toReturn), api);
-            }
+            }else
+                service.postMessage(caller, message, messageId, true);
         }
         return "done";
     }
