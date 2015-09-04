@@ -175,7 +175,7 @@ public class AppController {
                 String keyword = message.split(":")[1].trim();
                 medias = MessageService.getSearchResults(keyword);
                 for (ReplyMedia rm : medias) {
-                    toReturn.setMessage(rm.getCaption() + "\n");
+                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
                 }
                 api = "replysearch";
             }
@@ -183,8 +183,7 @@ public class AppController {
                 medias = MessageService.getTrendingProducts();
                 api = "replytrend";
                 for (ReplyMedia rm : medias) {
-                    toReturn.setNumber(caller);
-                    toReturn.setMessage(rm.getCaption() + "\n");
+                    toReturn.setMessage(rm.getCaption() + "\n \n \n");
                 }
             }
         }
@@ -193,11 +192,12 @@ public class AppController {
                 media.setNumber(caller);
             }
             sendReply(gson.toJson(medias), api);
-        } else {
+        } else if (!img) {
             if (!"WhaCha. Welcome to Snapdeal.".equals(toReturn.getMessage())) {
                 sendReply(gson.toJson(toReturn), api);
-            } else
+            } else {
                 service.postMessage(caller, message, messageId, true);
+            }
         }
         return "done";
     }
