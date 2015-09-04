@@ -63,6 +63,7 @@ public class MessageService {
         return rms;
     }
 
+    @SuppressWarnings("unchecked")
     public static List<ReplyMedia> getOrderStatus(String orderId, String emailId) throws IOException {
         List<ReplyMedia> rms = new ArrayList<ReplyMedia>();
         Document orderStatus = Jsoup.connect("http://www.snapdeal.com/showOrderStatus?orderId=" + orderId + "&searchKey=" + emailId).get();
@@ -100,6 +101,7 @@ public class MessageService {
         return rms;
     }
 
+    @SuppressWarnings("unchecked")
     public static List<ReplyMedia> getTrendingProducts() throws IOException {
         List<ReplyMedia> rms = new ArrayList<ReplyMedia>();
         Document tp = Jsoup.connect("http://www.snapdeal.com/acors/getTP?start=0&count=4").get();
