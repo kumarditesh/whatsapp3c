@@ -42,11 +42,7 @@ class EchoLayer(YowInterfaceLayer):
 
             else:
                 #time.sleep(2)
-                if messageProtocolEntity.getBody().lower().strip().startswith('trending'):
-                    if not trendingNowResponse is None:
-                        
-
-                post_params = {'caller'    :messageProtocolEntity.getFrom().split('@')[0],
+                post_params = {'caller'    :messageProtocolEntity.getFrom(),
                                'messageid' : messageProtocolEntity.getId(),
                                'message'   : messageProtocolEntity.getBody().lower()}
                 params = urllib.urlencode(post_params)

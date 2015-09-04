@@ -19,7 +19,8 @@ from constants import trendingNowResponse
 #############################################################################
 ## Globals
 #############################################################################
-help_string = 'Quick Commands:' + '\n' + 'help' + '\n' + 'search <search string>' + '\n' + 'reccom' + '\n'
+help_string = 'Quick Commands:' + '\n' + 'help' + '\n' + 'search:<search string>' + '\n' + 'trending' + '\n' + 'order:<order id>,<email id>' +'\n' + 'trendingimg' + '\n' + 'searchimg:<search string>' + '\n' + 'orderimg:<order id>,<email id>'
+
 #CREDENTIALS = ("919555535035", "veKEGp2CZK3RzOaW+1KiO7EYEm8=") # replace with your phone and password
               
 #############################################################################
@@ -31,7 +32,7 @@ help_string = 'Quick Commands:' + '\n' + 'help' + '\n' + 'search <search string>
 @route('/help')
 def hi():
     print('-------------------------\n REQUEST help\n-------------------------')
-    return 'Wassup! Welcome to Snapdeal!' + '\n' + 'Type your message to chat with us. Or, use our quick commands-\n' + help_string
+    return 'WhaCha! Welcome to Snapdeal!' + '\n' + 'Type your message to chat with us. Or, use our commands for self service-\n' + help_string
 
 
 
