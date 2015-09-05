@@ -264,7 +264,7 @@ $(document).ready(function(){
 
 		var $info=$("<div/>")
 			.addClass("chat-info-typing")
-			.text("Your friend is typing...")
+			.text("Snapdeal is typing...")
 			.css({
 				transform:"translate3d(0,30px,0)"
 			})
